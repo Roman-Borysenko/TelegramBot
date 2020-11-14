@@ -9,5 +9,6 @@ namespace TelegramBot.Models
         public int Depth { get; set; }
         public List<Category> Categories { get; set; }
         public Answer Answer { get; set; }
+        public Category ParentCategory { get; set; }
     }
 }

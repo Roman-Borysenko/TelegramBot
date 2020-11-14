@@ -2,11 +2,13 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.InputFiles;
 using Telegram.Bot.Types.ReplyMarkups;
+using TelegramBot.Models;
 using TelegramBot.Services;
 
 namespace TelegramBot.Controllers
@@ -47,9 +49,22 @@ namespace TelegramBot.Controllers
 
                 await client.SendTextMessageAsync(e.Message.Chat, "Виберіть пункт із списку нижче:", 
                     replyMarkup: answer.CreateMenu(answer.GetMainMenu()));
-            } else
+
+            } else if(text.Equals(answer.Beck))
             {
-                var category = answer.GetCategory(text);
+                var categories = new List<Category>();
+
+                if (answer.Current == null || answer.Current?.ParentCategory == null)
+                    categories = answer.GetMainMenu();
+                else
+                    categories = answer.Current.ParentCategory.Categories;
+
+                await client.SendTextMessageAsync(e.Message.Chat, "Виберіть пункт із списку нижче:",
+                        replyMarkup: answer.CreateMenu(categories));
+            } 
+            else
+            {
+                var category = answer.GetCategoryByName(text);
 
                 if (category?.Categories?.Count > 0)
                 {

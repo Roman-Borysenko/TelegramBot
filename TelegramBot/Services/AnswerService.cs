@@ -8,19 +8,36 @@ namespace TelegramBot.Services
 {
     public class AnswerService
     {
-        private Category currentRequest;
         private DataContext context;
+        public Category Current { get; set; }
+        public string Beck => "Повернутися";
         public AnswerService(DataContext dataContext)
         {
             context = dataContext;
         }
-        public IEnumerable<Category> GetMainMenu()
+        public List<Category> GetMainMenu()
         {
-            return context.Categories.Where(c => c.Depth == 0).ToList();
+            var category = context.Categories.Where(c => c.Depth == 0).ToList();
+
+            return category;
         }
-        public Category GetCategory(string text)
+        public Category GetCategoryByName(string text)
         {
-            return context.Categories.Include(c => c.Categories).FirstOrDefault(c => c.Name.Equals(text));
+            var category = context.Categories
+                .Include(c => c.ParentCategory)
+                .ThenInclude(c => c.Categories)
+                .Include(c => c.Categories)
+                .Include(c => c.Answer)
+                .FirstOrDefault(c => c.Name.Equals(text));
+
+            if(category.Answer == null && !category.Categories.Any(c => c.Id == -1))
+            {
+                category.Categories.Add(new Category() { Id = -1, Name = $"{Beck}" });
+            }
+
+            Current = category;
+
+            return category;
         }
 
         public Answer GetAnswer(int categoryId)
