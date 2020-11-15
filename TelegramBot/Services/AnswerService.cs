@@ -30,12 +30,13 @@ namespace TelegramBot.Services
                 .Include(c => c.Answer)
                 .FirstOrDefault(c => c.Name.Equals(text));
 
-            if(category.Answer == null && !category.Categories.Any(c => c.Id == -1))
-            {
-                category.Categories.Add(new Category() { Id = -1, Name = $"{Beck}" });
-            }
-
             Current = category;
+
+            if (category == null)
+                return null;
+
+            if(category.Answer == null && !category.Categories.Any(c => c.Id == -1))
+                category.Categories.Add(new Category() { Id = -1, Name = $"{Beck}" });
 
             return category;
         }

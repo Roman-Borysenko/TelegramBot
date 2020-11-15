@@ -28,6 +28,7 @@ namespace TelegramBot
                     configuration.GetConnectionString("DefaultConnection")), ServiceLifetime.Singleton);
 
             services.AddScoped<AnswerService>();
+            services.AddScoped<MessageService>();
 
         }
 
