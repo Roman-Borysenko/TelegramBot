@@ -5,8 +5,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Migrations\20201109214717_AddAnswerModel.cs" />
-    <Compile Remove="Migrations\20201109214717_AddAnswerModel.Designer.cs" />
+    <Compile Remove="Migrations\20201115175544_InitialMigration.cs" />
+    <Compile Remove="Migrations\20201115175544_InitialMigration.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

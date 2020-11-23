@@ -10,5 +10,7 @@ namespace TelegramBot.Models
         public Category Category { get; set; }
         public string Text { get; set; }
         public bool IsFile { get; set; }
+        public bool IsQuestion { get; set; }
+        public bool IsAllQuestions { get; set; }
     }
 }

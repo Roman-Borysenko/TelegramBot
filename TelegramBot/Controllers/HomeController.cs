@@ -28,28 +28,51 @@ namespace TelegramBot.Controllers
             logger.LogInformation($"Id: {me.Id}, Name bot: {me.FirstName}");
 
             client.OnMessage += Client_OnMessage;
+            client.OnCallbackQuery += Client_OnCallbackQuery;
 
             client.StartReceiving();
         }
 
-        private void Client_OnMessage(object sender, Telegram.Bot.Args.MessageEventArgs e)
+        private async void Client_OnCallbackQuery(object sender, Telegram.Bot.Args.CallbackQueryEventArgs e)
+        {
+            if(answer.DeleteQuestion(e.CallbackQuery.Data).Result)
+            {
+                await messageService.DeleteMessage(client, e.CallbackQuery.Message.Chat, e.CallbackQuery.Message.MessageId);
+            }
+        }
+
+        private async void Client_OnMessage(object sender, Telegram.Bot.Args.MessageEventArgs e)
         {
             var text = e?.Message?.Text;
+            var name = $"{e.Message.Chat.FirstName} {e.Message.Chat.LastName}";
 
-            if (text == null)
+            if (string.IsNullOrEmpty(text))
+            {
+                await messageService.SendTextMessage(client, e.Message.Chat,
+                    $"{name}, ви відправили пусте повідомлення.");
+
                 return;
+            }
 
             if (text.Contains("/start"))
             {
-                messageService.SendStartMessage(client, e.Message.Chat);
+                await messageService.SendStartMessage(client, e.Message.Chat);
 
-            } else if(text.Equals(answer.Beck))
+            }
+            else if (text.Equals(answer.Beck))
             {
-                messageService.SendPreviousMenu(client, e.Message.Chat);
-            } 
+                await messageService.SendPreviousMenu(client, e.Message.Chat);
+            }
+            else if (answer.IsQuestion)
+            {
+                await answer.CreateQuestion(name, e.Message.Chat.Username, text);
+
+                await messageService.SendTextMessage(client, e.Message.Chat,
+                    $"{name}, ми відповімо на ваше запитання найближчим часом.");
+            }
             else
             {
-                messageService.SendMessage(client, e.Message.Chat, text);
+                await messageService.SendMessage(client, e.Message.Chat, text);
             }
         }
         public IActionResult Index()

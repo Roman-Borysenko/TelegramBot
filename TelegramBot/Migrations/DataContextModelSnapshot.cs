@@ -29,7 +29,13 @@ namespace TelegramBot.Migrations
                     b.Property<int>("CategoryId")
                         .HasColumnType("int");
 
+                    b.Property<bool>("IsAllQuestions")
+                        .HasColumnType("bit");
+
                     b.Property<bool>("IsFile")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsQuestion")
                         .HasColumnType("bit");
 
                     b.Property<string>("Text")
@@ -50,20 +56,47 @@ namespace TelegramBot.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int?>("CategoryId")
-                        .HasColumnType("int");
-
                     b.Property<int>("Depth")
                         .HasColumnType("int");
+
+                    b.Property<bool>("IsAdmin")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("ParentCategoryId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("TextToUser")
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("CategoryId");
+                    b.HasIndex("ParentCategoryId");
 
                     b.ToTable("Categories");
+                });
+
+            modelBuilder.Entity("TelegramBot.Models.Question", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("QuestionText")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Questions");
                 });
 
             modelBuilder.Entity("TelegramBot.Models.Answer", b =>
@@ -77,9 +110,9 @@ namespace TelegramBot.Migrations
 
             modelBuilder.Entity("TelegramBot.Models.Category", b =>
                 {
-                    b.HasOne("TelegramBot.Models.Category", null)
+                    b.HasOne("TelegramBot.Models.Category", "ParentCategory")
                         .WithMany("Categories")
-                        .HasForeignKey("CategoryId");
+                        .HasForeignKey("ParentCategoryId");
                 });
 #pragma warning restore 612, 618
         }
